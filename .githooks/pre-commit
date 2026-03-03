@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+OPENAPI_FILE="rules/unified-api.openapi.yaml"
+HUMAN_FILE="rules/unified-api.human.md"
+SYNC_SCRIPT="scripts/sync-api-docs.sh"
+
+staged_files="$(git diff --cached --name-only)"
+
+openapi_changed=0
+human_changed=0
+
+if echo "$staged_files" | grep -Fxq "$OPENAPI_FILE"; then
+  openapi_changed=1
+fi
+
+if echo "$staged_files" | grep -Fxq "$HUMAN_FILE"; then
+  human_changed=1
+fi
+
+if [[ "$openapi_changed" -eq 1 || "$human_changed" -eq 1 ]]; then
+  if [[ ! -x "$SYNC_SCRIPT" ]]; then
+    echo "ERROR: missing executable sync script: $SYNC_SCRIPT"
+    exit 1
+  fi
+  "$SYNC_SCRIPT"
+  git add "$HUMAN_FILE"
+fi
+
+exit 0
