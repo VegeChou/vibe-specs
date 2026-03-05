@@ -63,11 +63,10 @@
     supportedLanguages: [zh-CN, en-US]
     priority:
       - Accept-Language header
-      - lang query parameter
+      - lang header
       - service default (en-US)
     behavior:
       - return message in selected language only
-      - include lang in every response
       - fallback to default language when unsupported value is provided
 ```
 
@@ -97,7 +96,7 @@
 ```yaml
     ApiResponse:
       type: object
-      required: [success, code, message, data, traceId, timestamp, lang]
+      required: [success, code, message, data, traceId, timestamp]
       properties:
         success:
           type: boolean
@@ -106,8 +105,6 @@
         message:
           type: string
           description: User-facing message in selected language, without stack trace
-        lang:
-          $ref: "#/components/schemas/LanguageCode"
         data:
           nullable: true
           description: Business payload. Null on error.
@@ -357,8 +354,8 @@
   developerGuide:
     quickStart:
       - obtain access token (JWT/API key based on environment)
-      - call endpoint with Accept-Language and optional X-Trace-Id
-      - parse unified response envelope fields first (success/code/message/lang)
+      - call endpoint with Accept-Language/lang and optional X-Trace-Id
+      - parse unified response envelope fields first (success/code/message)
     errorHandling:
       - use code for business decisions
       - use traceId when escalating to backend support

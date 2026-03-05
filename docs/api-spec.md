@@ -8,7 +8,7 @@ The primary specification has been moved to an OpenAPI rules file for LLM and to
 This includes:
 
 - Unified response envelope (`ApiResponse`)
-- Language negotiation (`Accept-Language` / `lang`, supports `zh-CN` and `en-US`)
+- Language negotiation via request headers (`Accept-Language` / `lang`, supports `zh-CN` and `en-US`)
 - Pagination schemas (`PageResult`, `CursorResult`)
 - Error codes and HTTP mapping (`ErrorCode`)
 - Error response and `traceId` conventions

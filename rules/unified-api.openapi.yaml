@@ -21,7 +21,7 @@ paths:
       operationId: rulesHealth
       parameters:
         - $ref: "#/components/parameters/AcceptLanguageHeader"
-        - $ref: "#/components/parameters/LangQuery"
+        - $ref: "#/components/parameters/LangHeader"
       responses:
         "200":
           description: Healthy
@@ -53,11 +53,11 @@ components:
       schema:
         type: string
         example: zh-CN
-    LangQuery:
+    LangHeader:
       name: lang
-      in: query
+      in: header
       required: false
-      description: Fallback language selector when header is unavailable.
+      description: Fallback language selector when Accept-Language is unavailable.
       schema:
         $ref: "#/components/schemas/LanguageCode"
     Page:
@@ -146,7 +146,7 @@ components:
 
     ApiResponse:
       type: object
-      required: [success, code, message, data, traceId, timestamp, lang]
+      required: [success, code, message, data, traceId, timestamp]
       properties:
         success:
           type: boolean
@@ -155,8 +155,6 @@ components:
         message:
           type: string
           description: User-facing message in selected language, without stack trace
-        lang:
-          $ref: "#/components/schemas/LanguageCode"
         data:
           nullable: true
           description: Business payload. Null on error.
@@ -242,8 +240,6 @@ components:
             message:
               type: string
               example: success
-            lang:
-              $ref: "#/components/schemas/LanguageCode"
             data:
               $ref: "#/components/schemas/HealthPayload"
 
@@ -260,7 +256,6 @@ components:
                 success: false
                 code: COMMON_INVALID_PARAM
                 message: 请求参数不合法
-                lang: zh-CN
                 data: null
                 traceId: fc5d3c6d3cfa45a39d68fd83f4e54a2f
                 timestamp: "2026-03-03T15:04:05Z"
@@ -342,11 +337,10 @@ x-rules:
     supportedLanguages: [zh-CN, en-US]
     priority:
       - Accept-Language header
-      - lang query parameter
+      - lang header
       - service default (en-US)
     behavior:
       - return message in selected language only
-      - include lang in every response
       - fallback to default language when unsupported value is provided
   pagination:
     page:
@@ -493,8 +487,8 @@ x-rules:
   developerGuide:
     quickStart:
       - obtain access token (JWT/API key based on environment)
-      - call endpoint with Accept-Language and optional X-Trace-Id
-      - parse unified response envelope fields first (success/code/message/lang)
+      - call endpoint with Accept-Language/lang and optional X-Trace-Id
+      - parse unified response envelope fields first (success/code/message)
     errorHandling:
       - use code for business decisions
       - use traceId when escalating to backend support
